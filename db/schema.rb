@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 5) do
   end
 
   create_table "trip_stations", force: :cascade do |t|
-    t.integer "journey_id"
+    t.integer "trip_id"
     t.integer "start_station_id"
     t.integer "end_station_id"
   end

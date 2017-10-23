@@ -1,9 +1,9 @@
 class CreateTripStations < ActiveRecord::Migration
   def change
     create_table :trip_stations do |t|
-      t.integer :journey_id
-      t.integer :start_station_id
-      t.integer :end_station_id
+      t.integer :trip_id
+      t.references :start_station
+      t.references :end_station
     end
   end
 end
