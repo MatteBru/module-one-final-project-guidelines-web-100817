@@ -1,3 +1,5 @@
+require 'json'
+require 'rest-client'
 require 'bundler'
 Bundler.require
 require_all"app/models"
