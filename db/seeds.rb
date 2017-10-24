@@ -3,37 +3,40 @@ require 'pry'
 
 # csv_text = File.read('lib/seeds/201709-citibike-tripdata.csv')
 # csv = CSV.parse(csv_text, :headers => true, :encoding => 'ISO-8859-1')
-i = 100
+
 
 # until i == 0 do
-  CSV.foreach('lib/seeds/49_sample.csv', headers: true) do |row|
+  CSV.foreach('lib/seeds/60_sample.csv', headers: true) do |row|
+    # binding.pry
     # until i == 0 do
       t = Trip.create
       # binding.pry
       # t.demographic_id =
-      b = Bike.find_or_create_by(bicycle_id: row["bikeid"])
+      t.bike = Bike.find_or_create_by(bicycle_id: row["bikeid"])
       # binding.pry
-      t.bike_id = b.id
 
-      ss = Station.find_or_create_by(
+
+      t.start_station = Station.find_or_create_by(
         stat_id: row["start station id"],
         station_name: row["start station name"],
         latitude: row["start station latitude"],
         longitude: row["start station longitude"])
 
-      es = Station.find_or_create_by(
+      t.end_station = Station.find_or_create_by(
         stat_id: row["end station id"],
         station_name: row["end station name"],
         latitude: row["end station latitude"],
         longitude: row["end station longitude"])
 
-      ts = TripStation.create(trip_id: t.id,
-        start_station: ss,
-        end_station: es)
+      t.trip_station.trip_id = t.id
+      t.trip_station.save
 
-        # binding.pry
+      # ts = TripStation.create(trip_id: t.id,
+      #   start_station: ss,
+      #   end_station: es)
 
-      t.trip_station = ts
+      # binding.pry
+
 
       t.trip_duration = row["tripduration"]
 
@@ -43,7 +46,6 @@ i = 100
 
       puts"saved #{t.start_time} to #{t.end_time}"
     # end
-    i-=1
   end
 
 # end
