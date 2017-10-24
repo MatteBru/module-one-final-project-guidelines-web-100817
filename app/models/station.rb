@@ -4,9 +4,9 @@ class Station < ActiveRecord::Base
   has_many :tripstations_to, :class_name => 'TripStation', :foreign_key => 'end_station_id'
 
 
-  has_many :trips_from, through: :tripstations_from, :source => :trip
+  has_many :trips_from, through: :tripstations_from, :source => :trips
 
-  has_many :trips_to, through: :tripstations_to, :source => :trip
+  has_many :trips_to, through: :tripstations_to, :source => :trips
 
   # has_many :bikes, through: :trips
 

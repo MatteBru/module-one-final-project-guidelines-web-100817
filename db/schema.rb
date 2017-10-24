@@ -31,19 +31,19 @@ ActiveRecord::Schema.define(version: 5) do
   end
 
   create_table "trip_stations", force: :cascade do |t|
-    t.integer "trip_id"
     t.integer "start_station_id"
     t.integer "end_station_id"
+    t.float   "est_distance"
+    t.integer "est_time"
   end
 
   create_table "trips", force: :cascade do |t|
     t.integer  "demographic_id"
     t.integer  "bike_id"
+    t.integer  "trip_station_id"
     t.integer  "trip_duration"
     t.datetime "start_time"
     t.datetime "end_time"
-    t.float    "est_distance"
-    t.integer  "est_time"
   end
 
 end
