@@ -16,6 +16,13 @@ ActiveRecord::Schema.define(version: 5) do
     t.integer "bicycle_id"
   end
 
+  create_table "demographics", force: :cascade do |t|
+    t.boolean "is_member"
+    t.text    "gender"
+    t.integer "min_age"
+    t.integer "max_age"
+  end
+
   create_table "stations", force: :cascade do |t|
     t.integer "stat_id"
     t.string  "station_name"
@@ -30,20 +37,12 @@ ActiveRecord::Schema.define(version: 5) do
   end
 
   create_table "trips", force: :cascade do |t|
-    t.integer  "journey_id"
-    t.integer  "user_demo_id"
-    t.integer  "bicycle_id"
+    t.integer  "demographic_id"
+    t.integer  "bike_id"
     t.integer  "trip_station_id"
     t.integer  "trip_duration"
     t.datetime "start_time"
     t.datetime "end_time"
-  end
-
-  create_table "user_demos", force: :cascade do |t|
-    t.boolean "is_member"
-    t.text    "gender"
-    t.integer "min_age"
-    t.integer "max_age"
   end
 
 end
