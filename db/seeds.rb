@@ -7,18 +7,25 @@ end
 
 
 
-def loc_to_vals(sslat:, sslong:, eslat:, eslong:)
-  url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=#{sslat},#{sslong}&destinations=#{eslat},#{eslong}&mode=bicycling"
+def loc_to_vals(locs ={sslat: nil, sslong: nil, eslat: nil, eslong: nil})
+  url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=#{locs[:sslat]},#{locs[:sslong]}&destinations=#{locs[:eslat]},#{locs[:eslong]}&mode=bicycling&key=AIzaSyDs4U_6HGXQc00hEMTurM9tl8JNjRsB9LY"
   trip_hash = fetch_info(url)
+  # binding.pry
+  elements = trip_hash["rows"][0]["elements"][0]
+  return {distance: nil, time: nil} if elements["status"] == "ZERO_RESULTS"
 
-  val_arr = trip_hash["rows"][0]["elements"][0].first(2).map{|a| a[1].values_at("text")}.flatten
+  val_arr = elements.first(2).map{|a| a[1].values_at("text")}.flatten
 
-  val_arr = val_arr.map {|string| string.split.first}
+  # val_arr = val_arr.map {|string| string.split.first}
 
   g_hash = {distance: val_arr[0].to_f, time: (val_arr[1].to_i*60)}
 end
 
 i = 0
+texisting = 0
+tcreated = 0
+hexisting = 0
+hcreated = 0
 existing = 0
 created = 0
   CSV.foreach('lib/seeds/201709-citibike-tripdata.csv', headers: true) do |row|
@@ -29,7 +36,7 @@ created = 0
       eslong = row["end station longitude"]
       eslat = row["end station latitude"]
       t = Trip.create
-      # binding.pry
+      #binding.pry
       # t.demographic_id =
       t.bike = Bike.find_or_create_by(bicycle_id: row["bikeid"])
       # binding.pry
@@ -57,9 +64,13 @@ created = 0
         t.trip_station = TripStation.create(start_station: ss, end_station: es, est_time: gmaps_hash[:time], est_distance: gmaps_hash[:distance])
 
         created += 1
+        tcreated += 1
+        hcreated += 1
       else
         t.trip_station = ts_arr[0]
         existing += 1
+        texisting += 1
+        hexisting += 1
       end
 
       # binding.pry
@@ -81,14 +92,22 @@ created = 0
       i += 1
 
       if i%100==0
+        puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
         puts "#{i} trips saved"
-        puts"#{i} created ... TripStations created: #{created} - existing TripStations used: #{existing}"
-        puts"-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+        puts"#{i} created ... TripStations created: #{hcreated} - existing TripStations used: #{hexisting}"
+        puts"||||||TOTALS --> created: #{created} ||| existing: #{existing} <-- TOTALS||||||"
+        puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        hexisting =0
+        hcreated =0
+        texisting =0
+        tcreated =0
       elsif i % 10 == 0
-        puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+
         puts"saved No. #{i}: #{t.start_time} to #{t.end_time}"
-        puts"TripStations created: #{created} - existing TripStations used: #{existing}"
-        puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        puts"TripStations created: #{tcreated} - existing TripStations used: #{texisting}"
+        puts"-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+        texisting =0
+        tcreated =0
       end
     # end
   end
