@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 5) do
+ActiveRecord::Schema.define(version: 6) do
 
   create_table "bikes", force: :cascade do |t|
     t.integer "bicycle_id"
@@ -18,9 +18,16 @@ ActiveRecord::Schema.define(version: 5) do
 
   create_table "demographics", force: :cascade do |t|
     t.boolean "is_member"
-    t.text    "gender"
+    t.integer "gender"
     t.integer "min_age"
     t.integer "max_age"
+  end
+
+  create_table "rider_types", force: :cascade do |t|
+    t.integer "demographic_id"
+    t.boolean "is_member"
+    t.integer "gender"
+    t.integer "birth_year"
   end
 
   create_table "stations", force: :cascade do |t|
@@ -38,7 +45,7 @@ ActiveRecord::Schema.define(version: 5) do
   end
 
   create_table "trips", force: :cascade do |t|
-    t.integer  "demographic_id"
+    t.integer  "rider_type_id"
     t.integer  "bike_id"
     t.integer  "trip_station_id"
     t.integer  "trip_duration"

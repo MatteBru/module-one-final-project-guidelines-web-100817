@@ -1,7 +1,7 @@
 class CreateTrips < ActiveRecord::Migration
   def change
     create_table :trips do |t|
-      t.integer :demographic_id
+      t.integer :rider_type_id
       t.integer :bike_id
       t.integer :trip_station_id
       t.integer :trip_duration

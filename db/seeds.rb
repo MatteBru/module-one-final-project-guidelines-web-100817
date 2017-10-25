@@ -28,7 +28,38 @@ hexisting = 0
 hcreated = 0
 existing = 0
 created = 0
-  CSV.foreach('lib/seeds/201709-citibike-tripdata.csv', headers: true) do |row|
+test_demo = 0
+
+#def Demographic variables
+Demographic.create(min_age: 0,max_age: 25,gender: 1, is_member:true)
+Demographic.create(min_age: 26,max_age: 50,gender: 1, is_member:true)
+Demographic.create(min_age: 51,max_age: 60,gender: 1, is_member:true)
+Demographic.create(min_age: 61,max_age: 100,gender: 1, is_member:true)
+Demographic.create(min_age: 0,max_age: 25,gender: 2, is_member:true)
+Demographic.create(min_age: 26,max_age: 50,gender: 2, is_member:true)
+Demographic.create(min_age: 51,max_age: 60,gender: 2, is_member:true)
+Demographic.create(min_age: 61,max_age: 100,gender: 2, is_member:true)
+Demographic.create(min_age: 0,max_age: 25,gender: 1, is_member:false)
+Demographic.create(min_age: 26,max_age: 50,gender: 1, is_member:false)
+Demographic.create(min_age: 51,max_age: 60,gender: 1, is_member:false)
+Demographic.create(min_age: 61,max_age: 100,gender: 1, is_member:false)
+Demographic.create(min_age: 0,max_age: 25,gender: 2, is_member:false)
+Demographic.create(min_age: 26,max_age: 50,gender: 2, is_member:false)
+Demographic.create(min_age: 51,max_age: 60,gender: 2, is_member:false)
+Demographic.create(min_age: 61,max_age: 100,gender: 2, is_member:false)
+Demographic.create(min_age: 0,max_age: 25,gender: 0, is_member:true)
+Demographic.create(min_age: 26,max_age: 50,gender: 0, is_member:true)
+Demographic.create(min_age: 51,max_age: 60,gender: 0, is_member:true)
+Demographic.create(min_age: 61,max_age: 100,gender: 0, is_member:true)
+Demographic.create(min_age: 0,max_age: 25,gender: 0, is_member:false)
+Demographic.create(min_age: 26,max_age: 50,gender: 0, is_member:false)
+Demographic.create(min_age: 51,max_age: 60,gender: 0, is_member:false)
+Demographic.create(min_age: 61,max_age: 100,gender: 0, is_member:false)
+
+
+
+
+  CSV.foreach('lib/seeds/60_sample.csv', headers: true) do |row|
     # binding.pry
 
       sslong = row["start station longitude"]
@@ -40,6 +71,24 @@ created = 0
       # t.demographic_id =
       t.bike = Bike.find_or_create_by(bicycle_id: row["bikeid"])
       # binding.pry
+      t.rider_type = RiderType.find_or_create_by(
+        # usertype,birth year,gender
+        is_member: row["usertype"] == "Subscriber",
+        gender: row["gender"],
+        birth_year: row["birth year"])
+
+      # t.demographic = Demographic.find_or_create_by(
+      #   min_age: 18,
+      #   max_age: 70,
+      #   gender: row["gender"],
+      #   is_member: row["usertype"] == "Subscriber")
+
+        rider_stats = {age: (2017 - t.rider_type.birth_year), gender: t.rider_type.gender, is_member: t.rider_type.is_member}
+
+        # binding.pry
+
+      t.demographic = Demographic.where('min_age <= ? AND max_age >= ? AND gender = ? AND is_member = ?', rider_stats[:age], rider_stats[:age], rider_stats[:gender], rider_stats[:is_member])[0]
+
 
 
       ss = start_station = Station.find_or_create_by(
@@ -90,6 +139,7 @@ created = 0
 
       t.save
       i += 1
+      test_demo +=1
 
       if i%100==0
         puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
