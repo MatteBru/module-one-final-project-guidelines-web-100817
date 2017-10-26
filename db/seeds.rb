@@ -1,6 +1,7 @@
 require 'csv'
 require 'pry'
 require_all "config/default"
+
 def fetch_info(url)
   begin
     info = JSON.parse(RestClient.get(url))
@@ -8,7 +9,6 @@ def fetch_info(url)
   rescue RestClient::Exceptions::OpenTimeout
     retry
   end
-
 end
 
 def loc_to_vals(locs ={sslat: nil, sslong: nil, eslat: nil, eslong: nil})
@@ -28,7 +28,6 @@ hexisting = 0
 hcreated = 0
 existing = 0
 created = 0
-test_demo = 0
 
   CSV.foreach('lib/seeds/201709-citibike-tripdata.csv', headers: true) do |row|
       t = Trip.create
@@ -37,12 +36,8 @@ test_demo = 0
 
       rider_stats = {birth_year:row["birth year"], gender: row["gender"], is_member: row["usertype"] == "Subscriber"}
 
-      # binding.pry if !row["birth year"] || row["gender"].to_i == 0
-      t.rider_type = RiderType.find_or_create_by(rider_stats
-        # is_member: rider_stats[:is_member],
-        # gender: rider_stats[:gender],
-        # birth_year: rider_stats[:birth_year]
-      )
+      t.rider_type = RiderType.find_or_create_by(rider_stats)
+
       rider_stats[:age] = t.rider_type.birth_year == 0 ? 0 :(2017 - t.rider_type.birth_year)
 
       t.demographic = Demographic.where('min_age <= ? AND max_age >= ? AND gender = ? AND is_member = ?', rider_stats[:age], rider_stats[:age], rider_stats[:gender], rider_stats[:is_member])[0]
@@ -97,7 +92,6 @@ test_demo = 0
 
       t.save
       i += 1
-      test_demo +=1
 
       if i%100==0
         puts"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -121,15 +115,3 @@ test_demo = 0
   end
 
 # end
-
-
-
-
-
-# Station.create(station_name:"Helpme St", stat_id: 1234)
-# Station.create(station_name:"my mind is jello Ave", stat_id: 5678)
-# Station.create(station_name:"Ouch Blvd", stat_id: 1234)
-# Station.create(station_name:"Wall St", stat_id: 1234)
-#
-#
-# Trip.create(trip_station_id: TripStation.find_or_create_by(start_station: Station.first, end_station: Station.last).id)
