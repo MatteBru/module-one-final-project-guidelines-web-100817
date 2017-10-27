@@ -25,11 +25,23 @@ class Station < ActiveRecord::Base
   end
 
   def self.busiest
-    station_hash = {}
-    self.all.each do |station|
-      station_hash[station.station_name] = station.trips.count
+      estat = Hash.new 0
+      self.all.each do |es|
+        estat[es.station_name] = es.trips.count
+      end
+      Hash[estat.sort_by{|s, t| t}.reverse.first(10)]
+  end
+
+  def self.printer(hash)
+    s =""
+    hash.each do |k,v|
+      s << "#{k} ----> #{v}\n"
     end
-    Hash[station_hash.sort_by{|s, t| t}.reverse.first(10)]
+    s
+  end
+
+  def self.busy_string
+    "\nOur data shows #{self.count} stations, with #{TripStation.count} unique combinations between them.\nThe theoretical posssible number combinations of these stations is #{self.count**2}.\nThe most frequently used stations are:\n#{printer(self.busiest)}"
   end
 
 end
